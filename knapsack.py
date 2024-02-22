@@ -18,6 +18,7 @@ import pandas as pd
 from dwave.system import LeapHybridCQMSampler
 from dimod import ConstrainedQuadraticModel, BinaryQuadraticModel, QuadraticModel
 
+
 def parse_inputs(data_file, capacity):
     """Parse user input and files for data to build CQM.
 
@@ -37,6 +38,7 @@ def parse_inputs(data_file, capacity):
         print("\nSetting weight capacity to 80% of total: {}".format(str(capacity)))
 
     return df['cost'], df['weight'], capacity
+
 
 def build_knapsack_cqm(costs, weights, max_weight):
     """Construct a CQM for the knapsack problem.
@@ -72,6 +74,7 @@ def build_knapsack_cqm(costs, weights, max_weight):
 
     return cqm
 
+
 def parse_solution(sampleset, costs, weights):
     """Translate the best sample returned from solver to shipped items.
 
@@ -91,7 +94,7 @@ def parse_solution(sampleset, costs, weights):
 
     best = feasible_sampleset.first
 
-    selected_item_indices = [key for key, val in best.sample.items() if val==1.0]
+    selected_item_indices = [key for key, val in best.sample.items() if val == 1.0]
     selected_weights = list(weights.loc[selected_item_indices])
     selected_costs = list(costs.loc[selected_item_indices])
 
@@ -99,6 +102,7 @@ def parse_solution(sampleset, costs, weights):
     print("\nSelected item numbers (0-indexed):", selected_item_indices)
     print("\nSelected item weights: {}, total = {}".format(selected_weights, sum(selected_weights)))
     print("\nSelected item costs: {}, total = {}".format(selected_costs, sum(selected_costs)))
+
 
 def datafile_help(max_files=5):
     """Provide content of input file names and total weights for click()'s --help."""
@@ -126,10 +130,12 @@ Default is to run on data/large.csv.
 
     return help
 
-filename_help = datafile_help()     # Format the help string for the --filename argument
+
+filename_help = datafile_help()  # Format the help string for the --filename argument
+
 
 @click.command()
-@click.option('--filename', type=click.File(), default='data/small.csv',
+@click.option('--filename', type=click.File(), default='data/very_small.csv',
               help=filename_help)
 @click.option('--capacity', default=None,
               help="Maximum weight for the container. By default sets to 80% of the total.")
@@ -146,6 +152,7 @@ def main(filename, capacity):
     sampleset = sampler.sample_cqm(cqm, label='Example - Knapsack')
 
     parse_solution(sampleset, costs, weights)
+
 
 if __name__ == '__main__':
     main()
